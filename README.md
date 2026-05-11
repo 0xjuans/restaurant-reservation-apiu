@@ -1,72 +1,72 @@
 # 🍽️ Restaurant Reservation APIU
 
-Professional restaurant reservation system built with Spring Boot 3, PostgreSQL, Redis, Docker, JWT security, and Flyway migrations.
+Sistema profesional de reservas para restaurante construido con Spring Boot 3, PostgreSQL, Redis, Docker, seguridad JWT y migraciones con Flyway.
 
 ---
 
-## Tech Stack
+## Stack Tecnológico
 
-| Layer | Technology |
-|-------|-----------|
+| Capa | Tecnología |
+|------|-----------|
 | Backend | Spring Boot 3.x (Java 21) |
-| Database | PostgreSQL 16 |
-| Cache / Sessions | Redis 7 |
-| Containers | Docker + Docker Compose |
-| Security | Spring Security + JWT |
+| Base de datos | PostgreSQL 16 |
+| Caché / Sesiones | Redis 7 |
+| Contenedores | Docker + Docker Compose |
+| Seguridad | Spring Security + JWT |
 | ORM | Spring Data JPA + Hibernate |
-| DB Migrations | Flyway |
-| API Docs | Swagger / OpenAPI 3 |
-| Testing | JUnit 5 + Mockito + Testcontainers |
+| Migraciones BD | Flyway |
+| Documentación API | Swagger / OpenAPI 3 |
+| Pruebas | JUnit 5 + Mockito + Testcontainers |
 | Build | Maven |
 
 ---
 
-## Modules
+## Módulos
 
-- **Auth** — Register, login, logout, roles (ADMIN, STAFF, CUSTOMER)
-- **Tables** — Manage tables by capacity and zone
-- **Reservations** — Create, update, cancel, confirm
-- **Customers** — Profile and reservation history
+- **Autenticación** — Registro, login, logout, roles (ADMIN, STAFF, CUSTOMER)
+- **Mesas** — Gestión de mesas por capacidad y zona
+- **Reservas** — Crear, modificar, cancelar, confirmar
+- **Clientes** — Perfil e historial de reservas
 
 ---
 
-## Getting Started
+## Inicio Rápido
 
-### Prerequisites
+### Requisitos previos
 - Docker Desktop
 - Java 21
 - Maven 3.9+
 
-### Run with Docker
+### Levantar con Docker
 ```bash
 docker-compose up -d
 ```
 
-### Run the app
+### Ejecutar la aplicación
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 ---
 
-## Branch Strategy
+## Estrategia de Ramas
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production-ready code |
-| `develop` | Integration branch |
-| `feature/*` | New features |
-| `fix/*` | Bug fixes |
-| `release/*` | Release preparation |
-
----
-
-## Environment Variables
-
-Copy `.env.example` to `.env` and fill in the values (never commit `.env`).
+| Rama | Propósito |
+|------|----------|
+| `main` | Código listo para producción |
+| `develop` | Rama de integración |
+| `feature/*` | Nuevas funcionalidades |
+| `fix/*` | Corrección de errores |
+| `release/*` | Preparación de versiones |
 
 ---
 
-## API Documentation
+## Variables de Entorno
 
-Once running, visit: `http://localhost:8080/swagger-ui.html`
+Copia `.env.example` a `.env` y completa los valores (nunca commitees `.env`).
+
+---
+
+## Documentación de la API
+
+Una vez que la aplicación esté corriendo, visita: `http://localhost:8080/swagger-ui.html`
