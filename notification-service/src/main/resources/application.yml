@@ -16,6 +16,22 @@ spring:
           starttls:
             enable: true
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/restaurant_db?currentSchema=notifications
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: notifications
+  flyway:
+    schemas: notifications
+    locations: classpath:db/migration
+
 eureka:
   client:
     service-url:
