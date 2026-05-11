@@ -1,0 +1,69 @@
+# ===========================
+# Maven
+# ===========================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ===========================
+# Spring Boot
+# ===========================
+*.jar
+*.war
+*.ear
+*.class
+
+# ===========================
+# IntelliJ IDEA
+# ===========================
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+
+# ===========================
+# Eclipse
+# ===========================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.local
+.env.*.local
+application-local.yml
+application-local.properties
+application-secrets.yml
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+*.log.*
+
+# ===========================
+# OS
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===========================
+# Docker
+# ===========================
+docker-compose.override.yml
