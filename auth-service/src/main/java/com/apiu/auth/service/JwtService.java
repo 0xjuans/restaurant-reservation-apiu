@@ -28,9 +28,10 @@ public class JwtService {
 
     private static final String BLACKLIST_PREFIX = "jwt:blacklist:";
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Long userId) {
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(userDetails.getUsername())   // email
+                .claim("userId", userId)              // id numérico del usuario
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey())

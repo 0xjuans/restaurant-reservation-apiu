@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
         var saved = userRepository.save(user);
         var userDetails = userDetailsService.loadUserByUsername(saved.getEmail());
-        var token = jwtService.generateToken(userDetails);
+        var token = jwtService.generateToken(userDetails, saved.getId());
 
         return buildAuthResponse(saved.getId(), userDetails, token);
     }
@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ApiException("Usuario no encontrado", HttpStatus.NOT_FOUND));
 
         var userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        var token = jwtService.generateToken(userDetails);
+        var token = jwtService.generateToken(userDetails, user.getId());
 
         return buildAuthResponse(user.getId(), userDetails, token);
     }
