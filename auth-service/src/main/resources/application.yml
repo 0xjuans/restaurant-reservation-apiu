@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: auth-service
+  profiles:
+    active: local
   datasource:
     url: jdbc:postgresql://localhost:5432/restaurant_db?currentSchema=auth
     username: ${POSTGRES_USER}
