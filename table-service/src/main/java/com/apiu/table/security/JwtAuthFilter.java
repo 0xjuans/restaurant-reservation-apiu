@@ -1,10 +1,11 @@
-package com.apiu.customer.security;
+package com.apiu.table.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-// Se ejecuta una vez por cada request HTTP antes de llegar al Controller.
-// Su trabajo: leer el token JWT, validarlo y poblar el SecurityContext.
+// Se ejecuta una vez por request. Valida el JWT y puebla el SecurityContext
+// para que Spring Security permita el acceso a los endpoints protegidos.
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -31,6 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        log.debug("JwtAuthFilter - Authorization header: {}", authHeader != null ? "present" : "absent");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -40,8 +43,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         try {
-            if (jwtService.isValid(token)) {
+            boolean valid = jwtService.isValid(token);
+            log.debug("JwtAuthFilter - token isValid: {}", valid);
+
+            if (valid) {
                 Long userId = jwtService.extractUserId(token);
+                log.debug("JwtAuthFilter - userId extracted: {}", userId);
 
                 var userDetails = User.withUsername(String.valueOf(userId))
                         .password("")
@@ -53,9 +60,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                log.debug("JwtAuthFilter - SecurityContext populated for userId: {}", userId);
             }
-        } catch (Exception ignored) {
-            // Token inválido o sin claim userId — continúa sin autenticar
+        } catch (Exception e) {
+            log.error("JwtAuthFilter - error processing token: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
