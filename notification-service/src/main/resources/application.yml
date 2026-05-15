@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: notification-service
+  profiles:
+    active: local
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -36,3 +38,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: ${JWT_SECRET}

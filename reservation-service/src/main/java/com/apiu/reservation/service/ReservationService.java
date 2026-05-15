@@ -1,8 +1,10 @@
 package com.apiu.reservation.service;
 
 import com.apiu.reservation.client.CustomerClient;
+import com.apiu.reservation.client.NotificationClient;
 import com.apiu.reservation.client.TableClient;
 import com.apiu.reservation.client.dto.CustomerResponse;
+import com.apiu.reservation.client.dto.NotificationRequest;
 import com.apiu.reservation.client.dto.TableResponse;
 import com.apiu.reservation.dto.request.ReservationRequest;
 import com.apiu.reservation.dto.request.ReservationStatusRequest;
@@ -10,13 +12,16 @@ import com.apiu.reservation.dto.response.ReservationResponse;
 import com.apiu.reservation.entity.Reservation;
 import com.apiu.reservation.entity.ReservationStatus;
 import com.apiu.reservation.repository.ReservationRepository;
+import com.apiu.reservation.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -24,6 +29,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CustomerClient customerClient;
     private final TableClient tableClient;
+    private final NotificationClient notificationClient;
+    private final JwtService jwtService;
 
     public List<ReservationResponse> getAll(String token) {
         return reservationRepository.findAll().stream()
@@ -76,13 +83,31 @@ public class ReservationService {
                 .notes(req.notes())
                 .build());
 
+        // Notifica al cliente por email de forma no bloqueante (si falla, solo se loguea)
+        sendNotification(saved, customer, table, "RESERVATION_CREATED", token);
+
         return buildResponse(saved, customer, table);
     }
 
     public ReservationResponse updateStatus(Long id, ReservationStatusRequest req, String token) {
         Reservation reservation = findOrThrow(id);
         reservation.setStatus(req.status());
-        return toResponse(reservationRepository.save(reservation), token);
+        Reservation saved = reservationRepository.save(reservation);
+
+        // Notifica al cliente cuando el estado cambia
+        String notifType = switch (req.status()) {
+            case CONFIRMED  -> "RESERVATION_CONFIRMED";
+            case CANCELLED  -> "RESERVATION_CANCELLED";
+            case COMPLETED  -> "RESERVATION_COMPLETED";
+            default         -> null;
+        };
+        if (notifType != null) {
+            CustomerResponse customer = customerClient.getById(token, saved.getCustomerId());
+            TableResponse table = tableClient.getById(token, saved.getTableId());
+            sendNotification(saved, customer, table, notifType, token);
+        }
+
+        return toResponse(saved, token);
     }
 
     public void delete(Long id) {
@@ -122,5 +147,27 @@ public class ReservationService {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Reserva no encontrada: " + id));
+    }
+
+    // Envía notificación al notification-service; si falla no interrumpe el flujo principal
+    private void sendNotification(Reservation r, CustomerResponse c, TableResponse t,
+                                  String type, String token) {
+        try {
+            String email = jwtService.extractEmail(token.replace("Bearer ", ""));
+            NotificationRequest notifReq = new NotificationRequest(
+                    r.getId(),
+                    email,
+                    c.firstName() + " " + c.lastName(),
+                    type,
+                    r.getDate(),
+                    r.getStartTime(),
+                    r.getEndTime(),
+                    t.number(),
+                    t.zoneName()
+            );
+            notificationClient.send(token, notifReq);
+        } catch (Exception e) {
+            log.warn("No se pudo enviar notificación para reserva {}: {}", r.getId(), e.getMessage());
+        }
     }
 }

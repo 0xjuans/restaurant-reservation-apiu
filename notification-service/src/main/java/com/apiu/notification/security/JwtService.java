@@ -1,10 +1,9 @@
-package com.apiu.reservation.security;
+package com.apiu.notification.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 // Valida tokens emitidos por el auth-service. No crea tokens.
-@Slf4j
 @Service
 public class JwtService {
 
@@ -29,17 +27,11 @@ public class JwtService {
         throw new IllegalArgumentException("Claim userId ausente o inválido");
     }
 
-    // El subject del token es el email del usuario (lo pone auth-service)
-    public String extractEmail(String token) {
-        return extractClaims(token).getSubject();
-    }
-
     public boolean isValid(String token) {
         try {
             Claims claims = extractClaims(token);
             return !claims.getExpiration().before(new java.util.Date());
         } catch (JwtException | IllegalArgumentException e) {
-            log.debug("JwtService - token inválido: {}", e.getMessage());
             return false;
         }
     }
