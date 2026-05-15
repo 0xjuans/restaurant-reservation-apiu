@@ -23,6 +23,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    // Endpoint interno: usado por reservation-service vía Feign para enriquecer reservas
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener cliente por ID")
+    public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.getById(id));
+    }
+
     @PostMapping("/profile")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Crear perfil de cliente")

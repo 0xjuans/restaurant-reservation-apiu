@@ -1,6 +1,6 @@
-package com.apiu.table.config;
+package com.apiu.reservation.config;
 
-import com.apiu.table.security.JwtAuthFilter;
+import com.apiu.reservation.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +26,7 @@ public class SecurityConfig {
             "/error"   // necesario para que Spring Boot pueda renderizar errores 4xx/5xx
     };
 
-    // Evita que Spring Boot registre el filtro también como servlet filter global.
-    // Solo debe ejecutarse dentro del security filter chain.
+    // Evita que Spring Boot registre el filtro también como servlet filter global
     @Bean
     public FilterRegistrationBean<JwtAuthFilter> jwtFilterRegistration(JwtAuthFilter filter) {
         FilterRegistrationBean<JwtAuthFilter> registration = new FilterRegistrationBean<>(filter);

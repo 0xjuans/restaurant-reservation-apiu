@@ -54,6 +54,14 @@ public class CustomerService {
         return toResponse(customerRepository.save(customer));
     }
 
+    // Busca por ID de perfil (usado internamente desde otros servicios vía Feign)
+    @Transactional(readOnly = true)
+    public CustomerResponse getById(Long id) {
+        return toResponse(customerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cliente no encontrado: " + id)));
+    }
+
     // Método privado reutilizable para buscar o lanzar 404
     private Customer findByUserId(Long userId) {
         return customerRepository.findByUserId(userId)

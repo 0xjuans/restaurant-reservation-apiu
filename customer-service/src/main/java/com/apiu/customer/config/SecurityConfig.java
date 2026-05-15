@@ -22,7 +22,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/actuator/health"
+            "/actuator/health",
+            "/error"   // necesario para que Spring Boot pueda renderizar errores 4xx/5xx
     };
 
     // Evita que Spring Boot registre el filtro también como servlet filter global.

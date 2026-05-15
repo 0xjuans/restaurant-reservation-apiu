@@ -1,4 +1,4 @@
-package com.apiu.customer.security;
+package com.apiu.reservation.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -19,13 +19,9 @@ public class JwtService {
     private final SecretKey secretKey;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
-        // Misma derivación que el auth-service: bytes UTF-8 de la cadena
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        log.debug("JwtService - secreto cargado, longitud: {} chars ({} bits)",
-                secret.length(), secret.getBytes(StandardCharsets.UTF_8).length * 8);
     }
 
-    // Lee el claim "userId" que el auth-service incluye en cada token
     public Long extractUserId(String token) {
         Object userId = extractClaims(token).get("userId");
         if (userId instanceof Integer) return ((Integer) userId).longValue();
