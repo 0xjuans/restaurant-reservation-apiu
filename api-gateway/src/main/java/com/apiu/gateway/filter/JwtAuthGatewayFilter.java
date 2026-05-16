@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import org.springframework.http.HttpMethod;
+
 import java.util.List;
 
-// Filtro global: valida JWT en todas las rutas excepto las públicas
+// Filtro global: valida JWT en todas las rutas excepto las públicas y los preflight CORS
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -29,6 +31,11 @@ public class JwtAuthGatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // Dejar pasar preflight CORS sin validar token
+        if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
+
         String path = exchange.getRequest().getURI().getPath();
 
         if (isPublic(path)) {
