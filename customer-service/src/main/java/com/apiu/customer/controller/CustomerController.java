@@ -23,6 +23,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    // Lista todos los clientes — solo para administradores
+    @GetMapping
+    @Operation(summary = "Listar todos los clientes")
+    public ResponseEntity<List<CustomerResponse>> getAll() {
+        return ResponseEntity.ok(customerService.getAll());
+    }
+
     // Endpoint interno: usado por reservation-service vía Feign para enriquecer reservas
     @GetMapping("/{id}")
     @Operation(summary = "Obtener cliente por ID")

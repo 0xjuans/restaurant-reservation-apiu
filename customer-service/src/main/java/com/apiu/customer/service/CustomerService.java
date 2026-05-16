@@ -4,6 +4,8 @@ import com.apiu.customer.dto.request.CustomerRequest;
 import com.apiu.customer.dto.response.CustomerResponse;
 import com.apiu.customer.entity.Customer;
 import com.apiu.customer.repository.CustomerRepository;
+
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,14 @@ public class CustomerService {
         customer.setPhone(request.getPhone());
 
         return toResponse(customerRepository.save(customer));
+    }
+
+    // Lista todos los clientes (solo para administradores)
+    @Transactional(readOnly = true)
+    public List<CustomerResponse> getAll() {
+        return customerRepository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     // Busca por ID de perfil (usado internamente desde otros servicios vía Feign)
